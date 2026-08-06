@@ -1,0 +1,13 @@
+{
+  "dna": {
+    "Nose": [[16, 0.657], [32, 0.343]],
+    "Jaw":  [[14, 0.626], [32, 0.374]]
+  },
+  "colors": {
+    "BodyColor": "#ae7d66"
+  },
+  "floats": {
+    "FrecklesAmount": 0.0,
+    "SunSpotsAmount": 0.0
+  }
+}

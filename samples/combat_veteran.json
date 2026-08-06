@@ -1,0 +1,396 @@
+{
+  "file": "samples/combat_veteran.chf",
+  "payload_size": 2246,
+  "modded": false,
+  "dna": {
+    "size": 232,
+    "gender_hash": "0xdd6c67f6",
+    "variant_hash": "0x69d4f6f4",
+    "part_count": 13,
+    "blends_per_part": 4,
+    "header_unknown": 4,
+    "max_head_id": 65535,
+    "parts": {
+      "EyebrowLeft": [
+        {
+          "head_id": 15,
+          "weight": 0.63845
+        },
+        {
+          "head_id": 53,
+          "weight": 0.36153
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "EyebrowRight": [
+        {
+          "head_id": 15,
+          "weight": 0.63845
+        },
+        {
+          "head_id": 53,
+          "weight": 0.36153
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "EyeLeft": [
+        {
+          "head_id": 5,
+          "weight": 0.6724
+        },
+        {
+          "head_id": 46,
+          "weight": 0.32758
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "EyeRight": [
+        {
+          "head_id": 5,
+          "weight": 0.6724
+        },
+        {
+          "head_id": 46,
+          "weight": 0.32758
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "Nose": [
+        {
+          "head_id": 16,
+          "weight": 0.65713
+        },
+        {
+          "head_id": 32,
+          "weight": 0.34285
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "EarLeft": [
+        {
+          "head_id": 7,
+          "weight": 0.70254
+        },
+        {
+          "head_id": 14,
+          "weight": 0.29744
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "EarRight": [
+        {
+          "head_id": 7,
+          "weight": 0.70254
+        },
+        {
+          "head_id": 14,
+          "weight": 0.29744
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "CheekLeft": [
+        {
+          "head_id": 11,
+          "weight": 0.61723
+        },
+        {
+          "head_id": 47,
+          "weight": 0.38276
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "CheekRight": [
+        {
+          "head_id": 11,
+          "weight": 0.61723
+        },
+        {
+          "head_id": 47,
+          "weight": 0.38276
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "Mouth": [
+        {
+          "head_id": 44,
+          "weight": 0.64167
+        },
+        {
+          "head_id": 7,
+          "weight": 0.35831
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "Jaw": [
+        {
+          "head_id": 14,
+          "weight": 0.62574
+        },
+        {
+          "head_id": 32,
+          "weight": 0.37424
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "Crown": [
+        {
+          "head_id": 47,
+          "weight": 0.69822
+        },
+        {
+          "head_id": 8,
+          "weight": 0.30176
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ],
+      "Neck": [
+        {
+          "head_id": 47,
+          "weight": 0.62701
+        },
+        {
+          "head_id": 1,
+          "weight": 0.37298
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        },
+        {
+          "head_id": 0,
+          "weight": 0.0
+        }
+      ]
+    },
+    "end": 280
+  },
+  "floats": {
+    "Makeup2MetalnessR": 0.0,
+    "TattooAge": 0.0,
+    "Makeup2OpacityG": 1.0,
+    "Makeup2MetalnessB": 0.7,
+    "Makeup1OpacityG": 1.0,
+    "Makeup2MetalnessG": 0.0,
+    "Makeup2OpacityR": 1.0,
+    "Makeup1OpacityB": 1.0,
+    "Makeup2OpacityB": 0.25,
+    "Makeup1OpacityR": 1.0,
+    "SunSpotsAmount": 0.0,
+    "Makeup3MetalnessB": 0.2,
+    "Makeup2SmoothnessB": 0.3,
+    "Makeup3SmoothnessG": 0.5,
+    "Makeup3MetalnessR": 1.0,
+    "FrecklesOpacity": 0.0,
+    "Makeup2SmoothnessR": 1.0,
+    "Makeup1MetalnessG": 0.7,
+    "Makeup1MetalnessB": 0.7,
+    "Makeup3SmoothnessR": 1.0,
+    "Makeup3MetalnessG": 0.2,
+    "Makeup1MetalnessR": 0.7,
+    "Makeup3SmoothnessB": 0.5,
+    "Makeup2SmoothnessG": 1.0,
+    "Makeup3OpacityB": 1.0,
+    "Makeup1SmoothnessR": 0.3,
+    "SunSpotsOpacity": 0.0,
+    "Makeup3OpacityR": 1.0,
+    "Makeup1SmoothnessB": 0.3,
+    "FrecklesAmount": 0.0,
+    "TattooHueRotation": 0.565643,
+    "Makeup1SmoothnessG": 0.3,
+    "Makeup3OpacityG": 1.0
+  },
+  "colors": {
+    "LipMakeupColor3": "#734145",
+    "LipMakeupColor1": "#c5bc6e",
+    "LipMakeupColor2": "#170e49",
+    "CheekMakeupColor2": "#b8b8b8",
+    "EyeMakeupColor2": "#fe6d42",
+    "CheekMakeupColor1": "#b8b8b8",
+    "EyeMakeupColor3": "#4d261a",
+    "BodyColor": "#ae7d66",
+    "CheekMakeupColor3": "#8c0a45",
+    "EyeMakeupColor1": "#000000"
+  },
+  "uv_params": {
+    "Makeup2OffsetV": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "Makeup2NumTilesV": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "Makeup2OffsetU": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "Makeup2NumTilesU": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "Makeup1NumTilesU": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "Makeup3OffsetV": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "Makeup1NumTilesV": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "Makeup3OffsetU": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "TattooNumTilesV": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "TattooNumTilesU": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "TattooOffsetV": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "TattooOffsetU": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "Makeup3NumTilesV": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "Makeup1OffsetU": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "Makeup3NumTilesU": [
+      8,
+      0,
+      0,
+      0
+    ],
+    "Makeup1OffsetV": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}
