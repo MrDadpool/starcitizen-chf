@@ -39,18 +39,41 @@ actual import proves it.
 
 ## Step 1 — setup
 
+**Look before installing:**
+
 ```powershell
-.\scripts\00_setup.ps1
+.\scripts\preflight.ps1
 ```
 
-Installs Python, zstd, Git, Rust and Blender via winget; clones and builds
-StarBreaker; finds `Data.p4k` and sets `SC_DATA_P4K`. Full list under
-[Prerequisites](#prerequisites) below.
+Installs nothing. Reports what you already have, with paths and versions, and
+finds `Data.p4k` by scanning every fixed drive (so an F: install is found
+automatically). Detection is deliberate about two Windows traps:
 
-If it cannot find `Data.p4k`, set it by hand and re-run:
+- `python.exe` under `WindowsApps` is a Microsoft Store stub, not Python. It is
+  rejected, and the `py` launcher is used as a fallback.
+- Blender and Rust routinely install without landing on PATH, so their usual
+  install roots are searched directly.
+
+Then install only what is missing:
 
 ```powershell
-[Environment]::SetEnvironmentVariable("SC_DATA_P4K","D:\path\to\Data.p4k","User")
+.\scripts\00_setup.ps1 -WhatIf   # print the plan, install nothing
+.\scripts\00_setup.ps1           # prompts y/N before touching anything
+```
+
+It never reinstalls or upgrades a tool you already have, and it skips
+`cargo build` if `starbreaker.exe` is already there.
+
+Just the `.chf` tools, no Rust or Blender:
+
+```powershell
+.\scripts\00_setup.ps1 -CoreOnly
+```
+
+If `Data.p4k` is not found automatically:
+
+```powershell
+.\scripts\00_setup.ps1 -P4kPath "F:\Roberts Space Industries\StarCitizen\LIVE\Data.p4k"
 ```
 
 The Rust build takes several minutes. Normal.
