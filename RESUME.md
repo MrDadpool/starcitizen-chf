@@ -126,9 +126,24 @@ Output: `out\sheets\contact_sheet_front.png`,
 
 ## Step 5 — the actual goal
 
-Send me the contact sheets plus your reference image. I map each face part to
-its two nearest heads, write an edit spec, and `edit_chf.py` emits the file.
-Then we iterate: you import, screenshot, I adjust.
+**Read [PIPELINE.md](PIPELINE.md).** The end state is automatic: photos in,
+`.chf` out, solved by least squares against the head basis. Not me eyeballing
+contact sheets.
+
+The one thing to check as soon as meshes are exported:
+
+```powershell
+python tools\check_topology.py out\heads
+```
+
+If every head has the same vertex count and face indices, they are morph
+targets sharing one topology, the blend is linear, and the solver is
+straightforward. If not, we take the fallback route in `PIPELINE.md`.
+
+**This check gates the whole design — run it before anything else in step 5.**
+
+Contact sheets (step 4) are still worth producing, but their role is debugging
+and sanity-checking the solver's picks, not driving the match by hand.
 
 ---
 

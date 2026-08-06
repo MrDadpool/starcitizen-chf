@@ -1,7 +1,10 @@
 # Project: Star Citizen character from reference image
 
-**Goal:** given a reference photo, produce a `.chf` the player can import in
-the Star Citizen character creator.
+**Goal:** hand the tool one or more reference photos, get back a `.chf` that
+loads in Star Citizen and looks like that person. Automatic — no manual slider
+hunting, no eyeballing preset heads.
+
+Design in [PIPELINE.md](PIPELINE.md).
 
 **Started:** 2026-08-06
 
