@@ -43,8 +43,9 @@ actual import proves it.
 .\scripts\00_setup.ps1
 ```
 
-Installs Git, Rust, Blender via winget; clones and builds StarBreaker; finds
-`Data.p4k` and sets `SC_DATA_P4K`.
+Installs Python, zstd, Git, Rust and Blender via winget; clones and builds
+StarBreaker; finds `Data.p4k` and sets `SC_DATA_P4K`. Full list under
+[Prerequisites](#prerequisites) below.
 
 If it cannot find `Data.p4k`, set it by hand and re-run:
 
