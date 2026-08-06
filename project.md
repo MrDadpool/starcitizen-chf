@@ -54,6 +54,23 @@ installed on the Mac.
 5. `scripts/03_render_sheets.py` — contact sheets. Smoke-test with `--limit 4`.
 6. Match reference image against sheets, emit `.chf`, iterate.
 
+## Deferred until it works
+
+Distribution as a free standalone app. Revisit once the solver produces a
+likeness. Researched 2026-08-06, decided not to act on yet:
+
+- **Head meshes cannot ship.** CIG copyright. The app must extract from the
+  user's own install on first run and cache locally. This constrains the
+  architecture, so it is worth remembering before packaging, not after.
+- StarBreaker is **MIT** — vendoring or bundling a prebuilt binary is fine
+  with attribution. MediaPipe (Apache 2.0), numpy/scipy (BSD) all fine.
+- Rust is the awkward user dependency. Either bundle a prebuilt
+  `starbreaker.exe` or port just the P4k reader to Python.
+- Repo currently has **no LICENSE**, which means all rights reserved by
+  default. Pick one before any release.
+- Precedent: starchar.app distributes publicly and has been tolerated. Not
+  permission — the EULA does restrict reverse engineering.
+
 ## Known gaps
 
 - Container header bytes `0x02..0x04` (flags/version) — preserved, purpose
