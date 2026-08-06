@@ -129,3 +129,33 @@ one or two things. Send me errors rather than fighting them.
 The creator blends a fixed gene pool. A face far outside it is not reachable at
 any weight. Bone structure is usually the wall, not the tooling. See
 `HEAD-IDS.md`.
+
+---
+
+## Prerequisites
+
+`scripts\00_setup.ps1` installs all of these via winget. Listed here so you
+know what is landing on the machine.
+
+| Tool | Why | Size |
+|---|---|---|
+| **winget** | package manager. Ships with Win11; on Win10 install "App Installer" from the Microsoft Store | — |
+| **Python 3** | runs `chf.py` / `edit_chf.py` | ~100 MB |
+| **zstd** | `chf.py` shells out to it for the payload | ~5 MB |
+| **Git** | clone StarBreaker | ~300 MB |
+| **Rust** (rustup) | builds StarBreaker's extractor. No prebuilt binary is published | ~1.5 GB, plus ~2 GB of build artifacts |
+| **Blender** | headless mesh rendering for the contact sheets | ~1.5 GB |
+
+Roughly **6 GB** of tooling, plus whatever the extracted meshes come to
+(unknown until step 2 — likely a few GB, not the full 100 GB p4k; we export
+only head assets).
+
+Star Citizen itself must already be installed — we read `Data.p4k` in place and
+never modify it.
+
+### If you want to skip Rust and Blender
+
+Steps 1–2 of the sanity check only need **Python + zstd**. That is enough to
+read your own `.chf` files, edit colors and DNA numerically, and confirm the
+round-trip import works. Rust and Blender are only for rendering the head
+contact sheets in steps 3–5.

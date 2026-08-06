@@ -16,13 +16,40 @@ function Need($cmd, $wingetId, $label) {
     winget install --id $wingetId --accept-source-agreements --accept-package-agreements
 }
 
-Need git   Git.Git            'Git'
-Need rustc Rustlang.Rustup    'Rust toolchain'
-Need blender BlenderFoundation.Blender 'Blender'
+if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+    throw 'winget not found. Install "App Installer" from the Microsoft Store, then re-run.'
+}
+
+Need git     Git.Git                    'Git'
+Need python  Python.Python.3.12         'Python 3'
+Need zstd    Facebook.Zstandard         'zstd'
+Need rustc   Rustlang.Rustup            'Rust toolchain'
+Need blender BlenderFoundation.Blender  'Blender'
 
 # Refresh PATH so freshly-installed tools resolve in this session.
 $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' +
             [Environment]::GetEnvironmentVariable('Path','User')
+
+# Blender's installer does not always land on PATH. Find it if it did not.
+if (-not (Get-Command blender -ErrorAction SilentlyContinue)) {
+    $blender = Get-ChildItem 'C:\Program Files\Blender Foundation' -Recurse `
+        -Filter blender.exe -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($blender) {
+        $env:Path += ";$($blender.DirectoryName)"
+        Write-Host "[ok]   blender found at $($blender.FullName)" -ForegroundColor Green
+        Write-Host '       (add that folder to PATH permanently if you want it in new shells)'
+    } else {
+        Write-Host '[!!]   blender.exe not on PATH — step 4 will need a full path' -ForegroundColor DarkYellow
+    }
+}
+
+# --- Verify the pure-Python tools actually run -------------------------------
+Write-Host '[..]   verifying chf.py against the bundled sample' -ForegroundColor Yellow
+$repo = Join-Path $PSScriptRoot '..'
+python (Join-Path $repo 'tools\chf.py') dump (Join-Path $repo 'samples\combat_veteran.chf') | Out-Null
+if ($LASTEXITCODE -ne 0) { throw 'chf.py failed — check that python and zstd are on PATH' }
+Write-Host '[ok]   chf.py works' -ForegroundColor Green
 
 # --- StarBreaker -------------------------------------------------------------
 $vendor = Join-Path $PSScriptRoot '..\vendor'
