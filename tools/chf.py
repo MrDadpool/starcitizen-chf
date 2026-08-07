@@ -240,38 +240,36 @@ def _scan_records(payload: bytes, start: int, end: int, decode):
 def find_blocks(payload: bytes, dna_end: int) -> dict:
     """Locate the float and color record blocks.
 
-    Both use a 12-byte stride. The float block is sorted ascending by hash,
-    which makes it the reliable anchor: find the longest run of stride-12
-    records whose hashes are ascending and all resolve. The u32 immediately
-    after it is the color count, and the colors follow 8 bytes later.
+    Both use a 12-byte stride and carry a u64 count 8 bytes ahead of their
+    first record. That declared count is the reliable anchor: find the offset
+    where it equals the number of stride-12 records that actually follow with
+    resolvable hashes. The u32 immediately after the float block is the color
+    count, and the colors follow 8 bytes later.
 
-    Colors are NOT sorted, so they cannot be found the same way.
+    Hash order is NOT an invariant — some files store the float block sorted
+    ascending and others do not, so ordering cannot be used to find it.
     """
     best = (0, 0)  # (start, length)
-    for start in range(dna_end, len(payload) - 12):
-        prev = None
+    for start in range(max(dna_end, 8), len(payload) - 12):
+        declared = struct.unpack_from("<Q", payload, start - 8)[0]
+        if not (4 <= declared <= 400) or start + declared * 12 > len(payload):
+            continue
+
         n = 0
         o = start
-        while o + 12 <= len(payload):
-            h = struct.unpack_from("<I", payload, o)[0]
-            if h not in HASH_TO_NAME or (prev is not None and h <= prev):
-                break
-            prev = h
+        while o + 12 <= len(payload) and \
+                struct.unpack_from("<I", payload, o)[0] in HASH_TO_NAME:
             n += 1
             o += 12
-        if n > best[1]:
+
+        if n == declared and n > best[1]:
             best = (start, n)
 
     float_start, n = best
-    if n < 4:
-        raise ValueError("could not locate float parameter block")
-
-    # Both blocks carry a u64 count 8 bytes ahead of their first record.
-    # Use it to confirm the scan landed on the true start.
-    declared = struct.unpack_from("<Q", payload, float_start - 8)[0]
-    if declared != n:
+    if n == 0:
         raise ValueError(
-            f"float block count mismatch: declared {declared}, scanned {n}"
+            "could not locate float parameter block: no offset where the "
+            "declared u64 count matches the records that follow"
         )
 
     float_end = float_start + n * 12
