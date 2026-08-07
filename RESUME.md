@@ -1,9 +1,25 @@
 # Resume here — Windows PC
 
-Everything that can be built without the game is built and tested. What is left
-needs `Data.p4k`, which only exists on the Windows install.
-
-**Read this top to bottom. It is the whole night's work.**
+> ## Steps 1–4 are done. Read this first.
+>
+> This session ran on 2026-08-06 against a live install. Current state:
+>
+> - **Setup (step 1): complete.** Python, zstd, Git, Rust, Blender all present;
+>   `starbreaker.exe` built; `Data.p4k` found on `F:`. Re-running
+>   `00_setup.ps1` is a no-op. One prerequisite was missing from the list
+>   below — see *Prerequisites*.
+> - **Discovery (step 2): complete, and the answer is negative.** The head
+>   meshes this plan assumes **do not exist as extractable assets**. See
+>   [HEAD-IDS.md](HEAD-IDS.md).
+> - **Steps 3–4 (export meshes, render contact sheets): retired.** Nothing to
+>   export or render.
+> - **The sanity check below is still the top priority** and still needs you —
+>   `roundtrip_test.chf` is already staged in `CustomCharacters`, built from
+>   `mr_val`. Import it.
+>
+> Read the sanity check, then skip to [PIPELINE.md](PIPELINE.md) and
+> [HEAD-IDS.md](HEAD-IDS.md) for where the project actually stands. Steps 1–4
+> are kept below as a record of what was run.
 
 ---
 
@@ -12,9 +28,17 @@ needs `Data.p4k`, which only exists on the Windows install.
 This is the single most valuable thing to do first, because every later step
 assumes it passes. It proves our writer produces a file the game accepts.
 
+**Already done, except the import.** `roundtrip_test.chf` is sitting in
+`CustomCharacters`, generated from `mr_val.chf`. Automated checks all pass: the
+decompressed payload is byte-identical to the original (0 diffs across four
+characters), the 4096-byte size is preserved, and the output reparses. Only an
+actual import can prove the rest.
+
+The commands that produced it, for reference:
+
 ```powershell
 # 1. Copy one of your own characters out of the game
-copy "$env:USERPROFILE\...\StarCitizen\LIVE\user\client\0\CustomCharacters\<yours>.chf" test_in.chf
+copy "F:\Robert Space Industries\StarCitizen\LIVE\user\client\0\CustomCharacters\mr_val.chf" test_in.chf
 
 # 2. Read it, write it back unchanged
 python tools\chf.py dump test_in.chf
@@ -78,28 +102,29 @@ If `Data.p4k` is not found automatically:
 
 The Rust build takes several minutes. Normal.
 
-## Step 2 — find the head assets
+## Step 2 — find the head assets — **DONE, negative result**
 
 ```powershell
 .\scripts\01_discover.ps1
 ```
 
-Dumps candidate asset listings to `out\discovery\*.txt`.
+Dumps candidate asset listings to `out\discovery\*.txt`. Ran clean after three
+bug fixes (BOM, stderr handling, `**/` globs).
 
-**We do not know the real head asset paths yet.** This is the actual unknown in
-the whole project. The script casts a wide net; the answer is somewhere in
-those files. Two known-good starting hashes from the CHF name table:
+The two known hashes resolved to real assets:
 
 ```
-protos_human_male_face_t1_pu
-protos_human_female_face_t1_pu
+Data\Objects\Characters\RigLogic\protos_human_male_face_t1_pu.RigLogic
+Data\Objects\Characters\RigLogic\protos_human_female_face_t1_pu.RigLogic
 ```
 
-**Send me the contents of `out\discovery\` and I will pick the exact paths.**
-Do not guess at this step — a wrong pattern means exporting thousands of
-irrelevant meshes.
+But **there is no set of ~60 head meshes to find.** One protos head mesh per
+gender, 5584 verts, zero morph targets, driven by a 198-bone facial rig. Full
+account of what was searched and ruled out: [HEAD-IDS.md](HEAD-IDS.md).
 
-## Step 3 — export meshes
+## Step 3 — export meshes — **RETIRED**
+
+Nothing to export. Kept for the record.
 
 Once we have the right paths:
 
@@ -109,7 +134,10 @@ Once we have the right paths:
 
 Writes `.glb` per mesh into `out\heads\`.
 
-## Step 4 — render contact sheets
+## Step 4 — render contact sheets — **RETIRED**
+
+No meshes to render. Kept for the record. The equivalent capture now happens
+in-game (emit → import → screenshot); see [HEAD-IDS.md](HEAD-IDS.md).
 
 Smoke test on 4 meshes first — do not sit through a full run of a broken script:
 
@@ -126,24 +154,19 @@ Output: `out\sheets\contact_sheet_front.png`,
 
 ## Step 5 — the actual goal
 
-**Read [PIPELINE.md](PIPELINE.md).** The end state is automatic: photos in,
-`.chf` out, solved by least squares against the head basis. Not me eyeballing
-contact sheets.
+**Read [PIPELINE.md](PIPELINE.md).** The end state is unchanged: photos in,
+`.chf` out, solved by least squares. What changed is the basis it solves
+against.
 
-The one thing to check as soon as meshes are exported:
+The `check_topology.py` gate that used to live here is moot — it compared
+vertex counts across exported head meshes, and there are none. The design now
+takes the **Fallback** route in `PIPELINE.md`: solve in 2-D landmark space
+against captured renders instead of 3-D vertex space.
 
-```powershell
-python tools\check_topology.py out\heads
-```
-
-If every head has the same vertex count and face indices, they are morph
-targets sharing one topology, the blend is linear, and the solver is
-straightforward. If not, we take the fallback route in `PIPELINE.md`.
-
-**This check gates the whole design — run it before anything else in step 5.**
-
-Contact sheets (step 4) are still worth producing, but their role is debugging
-and sanity-checking the solver's picks, not driving the match by hand.
+Before any of that, the head basis has to exist at all. That is the open
+decision in [HEAD-IDS.md](HEAD-IDS.md) — decode `RIG V1.9`, or build the
+catalog empirically by emitting 60 single-head `.chf` files and screenshotting
+each in the creator. The second is recommended.
 
 ---
 
@@ -153,15 +176,20 @@ and sanity-checking the solver's picks, not driving the match by hand.
 |---|---|
 | `.chf` container spec, CRC32C, zstd | verified against a real file |
 | DNA blend matrix, floats, colors | fully decoded, `FORMAT.md` |
-| `tools/chf.py` read/write | round-trips, CRC valid |
+| `tools/chf.py` read/write | round-trips, CRC valid; parses 6 live characters + sample |
 | `tools/edit_chf.py` | tested: 23 bytes changed, all inside targeted records |
+| Payload round-trip | byte-identical across 4 live characters |
+| Cross-check vs StarBreaker `chf to-json` | agrees on parts, head IDs, weights |
+| `scripts/preflight.ps1`, `00_setup.ps1`, `01_discover.ps1` | run on a real machine |
 
 ## What is untested
 
-Everything in `scripts/`. Written on macOS with no game install and no Blender.
-The PowerShell may have path bugs; the Blender script's API calls
-(`BLENDER_EEVEE_NEXT`, `import_scene.gltf`) are version-sensitive. Expect to fix
-one or two things. Send me errors rather than fighting them.
+- **The in-game import.** Nothing has been loaded by the game yet. This is the
+  one remaining gate on the writer.
+- `scripts/02_export_heads.ps1` and `scripts/03_render_sheets.py`. Never run,
+  and now moot — there are no per-head meshes for them to operate on. The
+  Blender script's version-sensitive API calls (`BLENDER_EEVEE_NEXT`,
+  `import_scene.gltf`) remain unverified against the installed Blender 5.2.
 
 ## The known hard limit
 
@@ -179,6 +207,7 @@ know what is landing on the machine.
 | Tool | Why | Size |
 |---|---|---|
 | **winget** | package manager. Ships with Win11; on Win10 install "App Installer" from the Microsoft Store | — |
+| **MSVC Build Tools** | **was missing from this list.** StarBreaker's deps (`zstd-sys`, `ring`, `rav1e`) are C/asm, so Rust's msvc target needs a real C toolchain. Without it the build dies with `linker link.exe not found`. Install `Microsoft.VisualStudio.2022.BuildTools` with the `VCTools` workload | ~3–6 GB |
 | **Python 3** | runs `chf.py` / `edit_chf.py` | ~100 MB |
 | **zstd** | `chf.py` shells out to it for the payload | ~5 MB |
 | **Git** | clone StarBreaker | ~300 MB |

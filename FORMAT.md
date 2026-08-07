@@ -89,7 +89,7 @@ u32   0
 u16   part_count      = 13 (12 pre-v8, Neck added in v8)
 u16   blends_per_part = 4  (always)
 u16   unknown
-u16   max_head_id     = 0xFFFF
+u16   max_head_id     = 59 (highest valid head id; 60 heads, 0..59)
       part_count * 4 records of:
         u16 value     scaled 0..65535 -> 0..100%
         u16 head_id   which preset head mesh
@@ -154,8 +154,17 @@ f32   value
 u32   0 (padding)
 ```
 
-Records are **sorted ascending by hash** — which makes this block the reliable
-anchor for locating everything after it. Decoded sample (33 records):
+Records are **not reliably sorted.** `combat_veteran.chf` happens to store them
+ascending by hash, and this document previously treated that as an invariant
+and as the way to locate the block. It is not: 3 of 6 characters from a live
+install store this block unsorted, and a parser anchored on ascending order
+fails on them outright.
+
+The **u64 record count immediately preceding the block** is the reliable
+anchor — find the offset where that declared count equals the number of
+stride-12 records that actually follow. That is what `find_blocks` does.
+
+Decoded sample (33 records):
 
 ```
 Makeup1MetalnessR    0.70   Makeup2MetalnessR   0.00   Makeup3MetalnessR   1.00
@@ -189,8 +198,9 @@ u8    R, G, B, A
 u32   0 (padding)
 ```
 
-Unlike the float block, colors are **not** sorted by hash. Do not try to find
-this block by looking for an ascending run — anchor off the float block's end
+Colors are **not** sorted by hash either (and, per above, neither is the float
+block dependably). Do not try to find this block by looking for an ascending
+run — anchor off the float block's end
 instead.
 
 Decoded sample:

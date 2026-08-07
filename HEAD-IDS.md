@@ -19,26 +19,51 @@ name table covers parameter names, not head appearance.
 ## Observed ID range
 
 From one sample file, IDs seen: 1, 5, 7, 8, 11, 14, 15, 16, 32, 44, 46, 47, 53.
-`max_head_id` is `0xFFFF`, which is a sentinel, not a real bound. Actual
-count is likely ~60 per gender, matching the creator's preset grid.
 
-## Plan to close it
+`max_head_id` is **59**, confirmed across six characters from a live install
+and independently by StarBreaker's own `chf to-json`. An earlier note here
+claimed the field was a `0xFFFF` sentinel; that was read from a single sample
+and is wrong. The gene pool is 60 heads (0–59) per gender, as guessed.
 
-StarBreaker ships a P4k extractor and a Blender addon. That is the whole
-pipeline:
+## Where the heads are NOT
 
-1. **Extract** head meshes from the local game install's `.p4k`.
-   `protos_human_male_face_t1_pu` / `protos_human_female_face_t1_pu` are the
-   known asset name hashes to start from.
-2. **Render** a contact sheet per face part — 60 noses, 60 jaws, 60 mouths,
-   front and 3/4 view, neutral lighting.
-3. **Match** a reference image against the sheets, part by part. Pick the two
-   nearest heads and a weight.
-4. **Emit** a `.chf`, drop it in `CustomCharacters`, import in-game, screenshot,
-   refine.
+Searched on 2026-08-06 against a live 152 GB `Data.p4k`. Recording the dead
+ends so nobody repeats them:
 
-Step 1–2 is the only real build. One-time cost, reusable for every character
-after.
+- **Not separate mesh assets.** There is exactly one protos head mesh per
+  gender, at
+  `Data/Objects/Characters/Human/heads/{male,female}/pu/protos_human_*_face_t1_pu/`.
+  Exported to GLB it is **1 mesh, 5584 verts, 0 morph targets**.
+- **Not the `.RigLogic` file.** `protos_human_male_face_t1_pu.RigLogic` is
+  CIG's own `RIG V1.9` format (not Epic's DNA). Its `0x38` field is
+  `0xdd6c67f6`, exactly the `gender_hash` in the `.chf`, so it is the right
+  asset — but its string table is entirely `CTL_*` *expression* controls
+  (`CTL_R_brow_raiseIn`, `CTL_expressions blinkR`). That is the facial
+  animation solver, not identity. No count of 59/60 appears anywhere in it.
+- **Not `PROTOSINFO`.** The name is a red herring given the `protos_` prefix.
+  The chunk is 76 bytes of metadata: `count=1`, name `head`, pointing back at
+  `protos_human_male_face_t1_pu` / `0xdd6c67f6`.
+- **Not the RigLogic archetypes.** `Data/Objects/Characters/RigLogic/` holds 77
+  files, but only 15 male and 14 female `*_archetype_*`. Nowhere near 60, and
+  head IDs are not an index into them.
+- **Not found in DataCore** under any head/customizer record-type name tried.
+
+The head mesh is driven by a **198-bone facial rig** (`FACIAL_LOD0_C_Skull`,
+`FACIAL_LOD1_L_EyelidUpper`, …). Head identity is therefore almost certainly
+bone-pose data inside the `RIG V1.9` container, which nothing public parses —
+StarBreaker only *names* the chunk type.
+
+## Two ways to close it
+
+1. **Reverse-engineer `RIG V1.9`** far enough to pull per-head joint deltas.
+   Real work, no prior art, unknown payoff.
+2. **Build the catalog empirically.** Emit 60 `.chf` files that put a single
+   head at 100% for one face part, import each, screenshot the creator. That
+   produces exactly the visual reference this document asks for, using only
+   tooling that already works. Far less effort, and it sidesteps the format
+   entirely.
+
+Option 2 is the recommended path.
 
 ## Hard limit to expect
 
@@ -48,4 +73,6 @@ ethnicity are usually the wall, not the tooling.
 
 ## Status
 
-Not started. See `project.md`.
+Investigated 2026-08-06 on Windows against a live install. The asset hunt is
+done and the answer is negative: the 60 heads are not extractable as meshes.
+See "Two ways to close it" above. See `project.md`.

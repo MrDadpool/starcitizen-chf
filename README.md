@@ -68,17 +68,27 @@ Output is not byte-identical to the game's own encoder (different zstd
 settings) but reparses cleanly and passes CRC validation. **Not yet confirmed
 by an actual in-game import** — that is the first task in `RESUME.md`.
 
-## Scripts (Windows, untested)
+## Scripts (Windows)
 
-`scripts/` holds the asset-extraction pipeline. All of it was written on macOS
-without a game install, so expect to fix something.
+`scripts/` holds the asset-extraction pipeline.
 
 ```
-00_setup.ps1        install Rust + Blender, build StarBreaker, locate Data.p4k
-01_discover.ps1     search the p4k for head mesh assets
-02_export_heads.ps1 export those meshes to .glb
-03_render_sheets.py Blender headless: render per-head contact sheets
+preflight.ps1       report what is installed; install nothing    [run, works]
+00_setup.ps1        toolchain, build StarBreaker, locate Data.p4k [run, works]
+01_discover.ps1     search the p4k for head mesh assets           [run, works]
+02_export_heads.ps1 export those meshes to .glb                   [moot]
+03_render_sheets.py Blender headless: per-head contact sheets     [moot]
 ```
+
+The first three were fixed and run against a live install on 2026-08-06.
+`00_setup.ps1` also needs **MSVC Build Tools** with the C++ workload, which its
+own prerequisite list omits — StarBreaker's C dependencies will not link
+without it.
+
+The last two are marked moot rather than untested: discovery established that
+the per-head meshes they operate on **do not exist as extractable assets**, so
+there is nothing for them to export or render. See
+[HEAD-IDS.md](HEAD-IDS.md).
 
 ## Game paths
 

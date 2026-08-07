@@ -7,30 +7,45 @@ Automatic. No eyeballing contact sheets, no manual slider hunting.
 
 ---
 
+> ## ⚠️ Phase A does not work as written
+>
+> Checked 2026-08-06 against a live install. **The per-head meshes this design
+> is built on do not exist as extractable assets.** There is one protos head
+> mesh per gender (5584 verts, **zero morph targets**) driven by a 198-bone
+> facial rig. See [HEAD-IDS.md](HEAD-IDS.md) for the full search.
+>
+> Phase A steps 1–3 and the `check_topology.py` gate have nothing to operate
+> on, and `scripts/02_export_heads.ps1` has no per-head assets to export.
+> Phases C–E are unaffected in *structure* — the solver maths below is still
+> right — but they need a head basis that must now come from somewhere else.
+>
+> The cheapest route to that basis is the empirical catalog described in
+> HEAD-IDS.md: emit 60 single-head `.chf` files, import, screenshot. That
+> yields 2-D renders, which lands you in the **Fallback** section at the
+> bottom of this document rather than the 3-D vertex path.
+
 ## Why this is tractable
 
 The character creator does not sculpt. Each of 13 face parts is a weighted
-blend of preset head meshes:
+blend of preset heads:
 
 ```
 Nose = head16 @ 65.7% + head32 @ 34.3%
 ```
 
-StarBreaker calls the DNA block "morph blend data", and the mesh chunk table
-contains `MESH_MORPH_TARGET (0x1011)`. Morph targets **share one topology** —
-vertex 4211 is the same point on the face in every head.
+The blend is a **linear combination**, so fitting a photo is not
+search-by-vibes — it is least squares. That much still holds, and it is what
+makes the problem tractable at all.
 
-That single fact is what makes this solvable rather than a guessing game:
+What does *not* hold is the original justification for solving in 3-D vertex
+space. This document previously argued that the mesh chunk table contains
+`MESH_MORPH_TARGET (0x1011)` and that morph targets share one topology, so a
+blended face is a linear combination of head vertex arrays. Exporting the
+protos head yields **no morph targets at all**, so there are no per-head
+vertex arrays to stack and the shared-topology question is moot.
 
-> A blended face is a **linear combination** of head vertex arrays.
-
-So fitting a photo is not search-by-vibes. It is least squares.
-
-**Assumption, not yet verified.** Shared topology is inferred from the chunk
-type and the blend semantics. Step 1 below checks it directly, and the whole
-approach depends on the answer. If topology turns out to differ per head, we
-fall back to the landmark-from-renders method in "Fallback" at the bottom —
-slower, still automatic.
+Linearity in *landmark* space is the assumption that survives, and that is the
+Fallback method.
 
 ---
 
@@ -38,12 +53,21 @@ slower, still automatic.
 
 ### Phase A — build the head basis (once)
 
+**Superseded — see the warning at the top.** The original plan was:
+
 1. Export every head mesh from `Data.p4k` to GLB (`scripts/02_export_heads.ps1`).
 2. **Verify shared topology**: identical vertex count and face indices across
    all heads. This is the gate.
 3. Stack into a basis array `V[head, vertex, xyz]`.
 
-Cached to disk. Never recomputed.
+There are no per-head meshes to export, so none of this runs. The replacement
+is the empirical catalog: for each face part, emit 60 `.chf` files with one
+head at 100%, import each, and screenshot the creator. The result is a set of
+2-D renders per head rather than a vertex basis — which is exactly the input
+the Fallback method expects.
+
+Still cached to disk, still never recomputed. But it is a one-time *manual*
+capture pass, not an automated extraction.
 
 ### Phase B — landmark correspondence (once)
 
@@ -127,18 +151,33 @@ neutral rig. Neutral photos only.
 
 ---
 
-## Fallback if topology is not shared
+## Fallback — now the primary route
 
-Render each head from fixed cameras, run the same landmark detector on the
-renders, and solve in 2-D landmark space instead of 3-D vertex space. Landmark
+Originally written as the contingency "if topology is not shared". It is now
+the main path, because there is no vertex basis to solve against.
+
+Capture each head from fixed cameras, run the same landmark detector on those
+images, and solve in 2-D landmark space instead of 3-D vertex space. Landmark
 position is still close to linear in blend weight, so the same least-squares
-structure applies. Slower to set up, no manual matching, works either way.
+structure applies.
+
+One change from the original framing: the renders cannot come from Blender,
+because there are no head meshes to render. They come from the game's own
+character creator, via the emit-import-screenshot loop. That makes the capture
+pass manual and slow — 60 heads × the face parts you care about — but it only
+happens once, and it measures what the game actually draws rather than what we
+predicted it would.
 
 ---
 
 ## Status
 
-Phase A is blocked on `Data.p4k` (Windows only). Phases B–E are unwritten.
-The `.chf` reader, writer and editor are done and tested — see `README.md`.
+**Phase A is blocked on format, not tooling.** The Windows toolchain is fully
+working — `Data.p4k` located, StarBreaker built, meshes exportable — but the
+per-head assets the design assumed are not in the archive. See
+[HEAD-IDS.md](HEAD-IDS.md).
+
+Phases B–E are unwritten. The `.chf` reader, writer and editor are done and
+tested against six characters from a live install — see `README.md`.
 
 Tracking in `project.md`.
