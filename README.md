@@ -65,8 +65,12 @@ FLOATS
 ```
 
 Output is not byte-identical to the game's own encoder (different zstd
-settings) but reparses cleanly and passes CRC validation. **Not yet confirmed
-by an actual in-game import** — that is the first task in `RESUME.md`.
+settings) but reparses cleanly and passes CRC validation.
+
+**Confirmed by in-game import (2026-08-06).** A character was read and written
+back by our encoder, imported in the creator, and rendered as the same face.
+The writer is validated end to end: the container is accepted and the payload
+survives intact. Byte-identical output is therefore not required.
 
 ## Scripts (Windows)
 

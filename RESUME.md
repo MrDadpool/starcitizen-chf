@@ -13,9 +13,9 @@
 >   [HEAD-IDS.md](HEAD-IDS.md).
 > - **Steps 3–4 (export meshes, render contact sheets): retired.** Nothing to
 >   export or render.
-> - **The sanity check below is still the top priority** and still needs you —
->   `roundtrip_test.chf` is already staged in `CustomCharacters`, built from
->   `mr_val`. Import it.
+> - **The sanity check passed.** `roundtrip_test.chf` — written by our encoder
+>   from `mr_val` — imported and rendered as the same face. The writer is
+>   validated end to end. Nothing downstream is blocked on it any more.
 >
 > Read the sanity check, then skip to [PIPELINE.md](PIPELINE.md) and
 > [HEAD-IDS.md](HEAD-IDS.md) for where the project actually stands. Steps 1–4
@@ -28,11 +28,12 @@
 This is the single most valuable thing to do first, because every later step
 assumes it passes. It proves our writer produces a file the game accepts.
 
-**Already done, except the import.** `roundtrip_test.chf` is sitting in
-`CustomCharacters`, generated from `mr_val.chf`. Automated checks all pass: the
-decompressed payload is byte-identical to the original (0 diffs across four
-characters), the 4096-byte size is preserved, and the output reparses. Only an
-actual import can prove the rest.
+**Done, and it passed.** `roundtrip_test.chf` was generated from `mr_val.chf`,
+imported in the character creator, and looked identical. Automated checks had
+already passed — decompressed payload byte-identical to the original (0 diffs
+across four characters), 4096-byte size preserved, output reparses — and the
+import confirmed the part they could not: the game accepts our container and
+reads our payload correctly despite the compressed frame differing.
 
 The commands that produced it, for reference:
 
@@ -180,12 +181,11 @@ each in the creator. The second is recommended.
 | `tools/edit_chf.py` | tested: 23 bytes changed, all inside targeted records |
 | Payload round-trip | byte-identical across 4 live characters |
 | Cross-check vs StarBreaker `chf to-json` | agrees on parts, head IDs, weights |
+| **In-game import of our own output** | **passed — loads and looks identical** |
 | `scripts/preflight.ps1`, `00_setup.ps1`, `01_discover.ps1` | run on a real machine |
 
 ## What is untested
 
-- **The in-game import.** Nothing has been loaded by the game yet. This is the
-  one remaining gate on the writer.
 - `scripts/02_export_heads.ps1` and `scripts/03_render_sheets.py`. Never run,
   and now moot — there are no per-head meshes for them to operate on. The
   Blender script's version-sensitive API calls (`BLENDER_EEVEE_NEXT`,

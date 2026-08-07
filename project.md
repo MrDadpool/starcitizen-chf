@@ -50,7 +50,12 @@ Design in [PIPELINE.md](PIPELINE.md).
 - **Cross-validated.** StarBreaker ships its own `chf to-json`. It agrees with
   `chf.py` on part counts, head IDs and blend weights.
 - **Round-trip verified end to end.** Payloads byte-identical (0 diffs), 4096-B
-  size preserved, output reparses. Still needs an in-game import to be certain.
+  size preserved, output reparses.
+- **Writer validated in-game.** `roundtrip_test.chf`, produced by our encoder
+  from `mr_val.chf`, imported in the character creator and rendered as the same
+  face. This was the project's top blocker. It confirms the container is
+  accepted and the payload survives intact, so byte-identical output is not
+  required and the differing zstd settings are a non-issue.
 - **Three PowerShell bugs fixed** — see the scripts commit: missing UTF-8 BOMs
   (PS 5.1 read them as ANSI and mangled every em-dash, leaving
   `01_discover.ps1` unparseable), a `2>&1` that aborted the whole discovery
@@ -71,9 +76,7 @@ installed on the Mac.
 
 ## Next up
 
-1. **Round-trip import test.** `roundtrip_test.chf` is staged in
-   `CustomCharacters`. Import it and confirm it matches `mr_val`. Everything
-   downstream assumes this passes. **Still the top blocker.**
+1. ~~Round-trip import test~~ — **done, passed.** See Completed.
 2. **Decide the head-basis route** (see `HEAD-IDS.md`):
    - reverse-engineer `RIG V1.9` for per-head joint deltas, or
    - build the catalog empirically — 60 single-head `.chf` files, import,
@@ -111,9 +114,10 @@ likeness. Researched 2026-08-06, decided not to act on yet:
   unknown.
 - `header_unknown` u16 in the DNA block.
 - Trailing GUID tables past payload `0x053A` (material variants / loadout).
-- Written files are not byte-identical to the game's encoder (zstd settings
-  differ). The *decompressed payload* is byte-identical, verified across four
-  live characters; only the compressed frame differs.
+- ~~Written files are not byte-identical to the game's encoder~~ — no longer a
+  gap. The decompressed payload *is* byte-identical across four live
+  characters; only the compressed frame differs, and an in-game import
+  confirmed the game does not care.
 - ~~`part_count` 12 vs 13 unexplained~~ — resolved. `FORMAT.md` already
   records it: `Neck` was added in v8, so pre-v8 characters have 12 parts. It is
   the last entry, so `FACE_PARTS` names stay aligned either way. Confirmed
@@ -122,5 +126,6 @@ likeness. Researched 2026-08-06, decided not to act on yet:
 
 ## Untested
 
-Nothing has been imported into the game yet — this remains the single most
-valuable outstanding check. `roundtrip_test.chf` is staged and ready.
+The read/write path is now fully validated, including in-game. What remains
+untested is `scripts/02_export_heads.ps1` and `scripts/03_render_sheets.py` —
+and those are moot, since there are no per-head meshes for them to process.

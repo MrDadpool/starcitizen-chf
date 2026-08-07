@@ -63,7 +63,9 @@ StarBreaker only *names* the chunk type.
    tooling that already works. Far less effort, and it sidesteps the format
    entirely.
 
-Option 2 is the recommended path.
+Option 2 is the recommended path, and as of 2026-08-06 it is known to be
+viable: a `.chf` written by our own encoder was imported and rendered
+correctly, which is the single capability the whole approach rests on.
 
 ## Hard limit to expect
 
