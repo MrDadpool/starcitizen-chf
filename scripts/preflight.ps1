@@ -1,4 +1,4 @@
-# preflight.ps1 — report what is already installed. Installs NOTHING.
+﻿# preflight.ps1 — report what is already installed. Installs NOTHING.
 #
 #   .\scripts\preflight.ps1
 #
@@ -75,7 +75,7 @@ function Get-ToolStatus {
             Version = (Get-Version $python '--version'); Required = 'core'
         }
         [pscustomobject]@{
-            Name = 'zstd'; Exe = (Find-Exe -Name zstd); WingetId = 'Facebook.Zstandard'
+            Name = 'zstd'; Exe = (Find-Exe -Name zstd); WingetId = 'Meta.Zstandard'
             Version = (Get-Version (Find-Exe -Name zstd) '--version'); Required = 'core'
         }
         [pscustomobject]@{

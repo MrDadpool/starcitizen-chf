@@ -1,4 +1,4 @@
-# 02_export_heads.ps1 — export head meshes from Data.p4k to GLB.
+﻿# 02_export_heads.ps1 — export head meshes from Data.p4k to GLB.
 #
 # UNTESTED, and it needs a real asset path pattern from 01_discover.ps1 first.
 #

@@ -1,4 +1,4 @@
-# 00_setup.ps1 — set up the head-extraction pipeline.
+﻿# 00_setup.ps1 — set up the head-extraction pipeline.
 #
 # Detects what is already installed and installs ONLY what is missing.
 # Nothing is upgraded or reinstalled over an existing tool.
