@@ -8,6 +8,9 @@ Design in [PIPELINE.md](PIPELINE.md).
 
 **Started:** 2026-08-06
 
+Waiting on: David's Windows PC with Star Citizen installed to run the pipeline (scripts untested)
+Next action: Round-trip import test: write an unmodified .chf, import in-game, confirm nothing changed
+
 ---
 
 ## Completed
